@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll Records</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            font-family: "Poppins", sans-serif;
+            color: white;
+        }
+
+        .container-box {
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: none;
+        }
+
+        table {
+            color: white !important;
+        }
+
+        thead {
+            background: rgba(0,0,0,0.3);
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        th, td {
+            border-color: rgba(255,255,255,0.2) !important;
+        }
+
+        .search-box {
+            border-radius: 10px;
+            border: none;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-box">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">💰 Payroll Records</h2>
+        <p class="opacity-75">View all processed salaries</p>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="mb-3 d-flex justify-content-between">
+        <input type="text" id="search" class="form-control w-25 search-box" placeholder="Search employee...">
+
+        <a href="{% url 'dashboard' %}" class="btn btn-light">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card p-3">
+        <table class="table table-hover text-center">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>Basic</th>
+                    <th>HRA</th>
+                    <th>Bonus</th>
+                    <th>Deductions</th>
+                    <th>Net Salary</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody">
+                {% for p in records %}
+                <tr>
+                    <td>{{ p.employee.name }}</td>
+                    <td>{{ p.month }}</td>
+                    <td>{{ p.year }}</td>
+                    <td>₹{{ p.basic }}</td>
+                    <td>₹{{ p.hra }}</td>
+                    <td>₹{{ p.bonus }}</td>
+                    <td>₹{{ p.deductions }}</td>
+                    <td><strong>₹{{ p.net_salary }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No payroll records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- SEARCH SCRIPT -->
+<script>
+const searchInput = document.getElementById("search");
+const tableBody = document.getElementById("tableBody");
+
+searchInput.addEventListener("keyup", function () {
+    const value = this.value.toLowerCase();
+    const rows = tableBody.getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const rowText = rows[i].innerText.toLowerCase();
+
+        if (rowText.includes(value)) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+});
+</script>
+
+</body>
+</html>

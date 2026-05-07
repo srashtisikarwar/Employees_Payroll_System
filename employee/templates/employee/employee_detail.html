@@ -1,0 +1,72 @@
+{% extends 'employee/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Employee Details</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Name:</th>
+                            <td>{{ employee.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Designation:</th>
+                            <td>{{ employee.designation }}</td>
+                        </tr>
+                        <tr>
+                            <th>Department:</th>
+                            <td>{{ employee.department }}</td>
+                        </tr>
+                        <tr>
+                            <th>Joining Date:</th>
+                            <td>{{ employee.joining_date }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Basic Salary:</th>
+                            <td>₹{{ employee.basic_salary }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ employee.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone:</th>
+                            <td>{{ employee.phone }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary">Back to List</a>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0;
+    }
+    .table th {
+        font-weight: bold;
+        width: 40%;
+    }
+    .table td {
+        width: 60%;
+    }
+</style>
+{% endblock %}

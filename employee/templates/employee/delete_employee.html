@@ -1,0 +1,77 @@
+{% extends 'employee/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0">Delete Employee</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Warning!</h4>
+                <p>Are you sure you want to delete the following employee?</p>
+            </div>
+            
+            <div class="employee-details p-3 border rounded">
+                <h5>Employee Information:</h5>
+                <table class="table table-bordered mt-3">
+                    <tr>
+                        <th>Name:</th>
+                        <td>{{ employee.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Designation:</th>
+                        <td>{{ employee.designation }}</td>
+                    </tr>
+                    <tr>
+                        <th>Department:</th>
+                        <td>{{ employee.department }}</td>
+                    </tr>
+                    <tr>
+                        <th>Joining Date:</th>
+                        <td>{{ employee.joining_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Basic Salary:</th>
+                        <td>{{ employee.basic_salary }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ employee.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone:</th>
+                        <td>{{ employee.phone }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <form method="POST" class="mt-4">
+                {% csrf_token %}
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0;
+    }
+    .employee-details {
+        background-color: #f8f9fa;
+    }
+    .table th {
+        width: 30%;
+        background-color: #f1f1f1;
+    }
+</style>
+{% endblock %}

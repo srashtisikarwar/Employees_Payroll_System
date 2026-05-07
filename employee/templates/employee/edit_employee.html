@@ -1,0 +1,112 @@
+{% extends 'employee/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
+            <h3 class="mb-0">Edit Employee Details</h3>
+        </div>
+
+        <div class="card-body p-4">
+            <form method="POST" action="{% url 'employee:edit_employee' employee.emp_id %}">
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label fw-semibold">Name</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ employee.name }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="designation" class="form-label fw-semibold">Designation</label>
+                        <input type="text" class="form-control" id="designation" name="designation"
+                               value="{{ employee.designation }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <input type="text" class="form-control" id="department" name="department"
+                               value="{{ employee.department }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="joining_date" class="form-label fw-semibold">Joining Date</label>
+                        <input type="date" class="form-control" id="joining_date" name="joining_date"
+                               value="{{ employee.joining_date|date:'Y-m-d' }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="basic_salary" class="form-label fw-semibold">Basic Salary (₹)</label>
+                        <input type="number" class="form-control" id="basic_salary" name="basic_salary"
+                               value="{{ employee.basic_salary }}" step="0.01" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="email" class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               value="{{ employee.email }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label fw-semibold">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone"
+                               value="{{ employee.phone }}" required>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-success px-4 me-2">
+                        <i class="bi bi-save"></i> Update Employee
+                    </button>
+                    <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary px-4">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f4f7fc;
+    }
+
+    .card {
+        max-width: 850px;
+        margin: 0 auto;
+        border-radius: 20px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 12px;
+        transition: box-shadow 0.2s ease-in-out;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 6px rgba(13, 110, 253, 0.4);
+        border-color: #0d6efd;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: scale(1.03);
+    }
+
+    .card-header {
+        border-bottom: none;
+    }
+
+    h3 {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

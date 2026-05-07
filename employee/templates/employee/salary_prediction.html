@@ -1,0 +1,162 @@
+{% extends 'employee/base.html' %}
+
+{% block title %}Salary Prediction{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Salary Prediction</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Use real employee salary data to predict the next salary value.</p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Select Employee</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+
+                                        <div class="mb-3">
+                                            <label for="employee" class="form-label">Existing Employee</label>
+                                            <select class="form-select" id="employee" name="employee">
+                                                <option value="">Choose an employee...</option>
+                                                {% for employee in employees %}
+                                                <option value="{{ employee.emp_id }}">{{ employee.name }} - {{ employee.designation }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="form-text">Select an existing employee to predict salary based on company tenure.</div>
+                                        </div>
+
+                                        <div class="mt-4 mb-3">
+                                            <h6 class="mb-2">Or predict for a new candidate</h6>
+                                            <p class="text-muted">Fill at least candidate salary and experience when predicting for a new hire.</p>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="candidate_name" class="form-label">Candidate Name</label>
+                                            <input type="text" id="candidate_name" name="candidate_name" class="form-control" value="{{ candidate_name_input }}" placeholder="Enter candidate name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="candidate_salary" class="form-label">Candidate Base Salary (₹)</label>
+                                            <input type="text" inputmode="numeric" id="candidate_salary" name="candidate_salary" class="form-control" value="{{ candidate_salary_input }}" placeholder="Enter candidate base salary, e.g. 20000 or 30,000">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="candidate_experience" class="form-label">Candidate Experience (years)</label>
+                                            <input type="number" min="0" id="candidate_experience" name="candidate_experience" class="form-control" value="{{ candidate_experience_input }}" placeholder="Enter years of experience">
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-magic me-2"></i>Predict Salary
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Prediction Results</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if prediction %}
+                                        {% if prediction.error %}
+                                        <div class="alert alert-danger">
+                                            {{ prediction.error }}
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-success">
+                                            <h6>Predicted Salary: ₹{{ prediction.predicted_salary }}</h6>
+                                            <p class="mb-1"><strong>Name:</strong> {{ prediction.selected }}</p>
+                                            <p class="mb-1"><strong>Current/Base Salary:</strong> ₹{{ prediction.current_salary }}</p>
+                                            <p class="mb-1"><strong>Experience:</strong> {{ prediction.experience_years }} years</p>
+                                            <p class="mb-1"><strong>Confidence:</strong> {{ prediction.confidence }}%</p>
+                                            <p class="mb-0"><strong>Based on:</strong> {{ prediction.factors }}</p>
+                                        </div>
+                                        {% endif %}
+                                    {% else %}
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                                        <p>Select an employee and click "Predict Salary" to see results.</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Salary Trends</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="salaryChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salaryChart').getContext('2d');
+    const chartLabels = {{ chart_labels_json|safe }};
+    const chartData = {{ chart_data_json|safe }};
+    const chartTitle = {{ chart_title_json|safe }};
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: chartTitle,
+                data: chartData,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.2,
+                pointRadius: 5,
+                pointBackgroundColor: 'rgb(75, 192, 192)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Salary (₹)'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: chartTitle
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `₹${context.formattedValue}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

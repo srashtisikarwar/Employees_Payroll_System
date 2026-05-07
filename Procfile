@@ -1,0 +1,1 @@
+web: gunicorn Employees_Payroll_System.wsgi:application
