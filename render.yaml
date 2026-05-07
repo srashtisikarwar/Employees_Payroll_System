@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: employees-payroll-system
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn Employees_Payroll_System.wsgi:application"
