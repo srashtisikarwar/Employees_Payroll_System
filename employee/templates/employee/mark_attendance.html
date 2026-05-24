@@ -47,14 +47,68 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <input type="radio" class="btn-check" name="status_{{ employee.emp_id }}" id="present_{{ employee.emp_id }}" value="present" {% if employee.attendance_today and employee.attendance_today.status == 'present' %}checked{% endif %}>
-                                        <label class="btn btn-outline-success" for="present_{{ employee.emp_id }}">Present</label>
+                                        <div class="btn-group" role="group">
 
-                                        <input type="radio" class="btn-check" name="status_{{ employee.emp_id }}" id="absent_{{ employee.emp_id }}" value="absent" {% if employee.attendance_today and employee.attendance_today.status == 'absent' %}checked{% endif %}>
-                                        <label class="btn btn-outline-danger" for="absent_{{ employee.emp_id }}">Absent</label>
+    <input type="radio"
+           class="btn-check"
+           name="status_{{ employee.emp_id }}"
+           id="present{{ employee.emp_id }}"
+           value="present">
 
-                                        <input type="radio" class="btn-check" name="status_{{ employee.emp_id }}" id="leave_{{ employee.emp_id }}" value="leave" {% if employee.attendance_today and employee.attendance_today.status == 'leave' %}checked{% endif %}>
-                                        <label class="btn btn-outline-warning" for="leave_{{ employee.emp_id }}">Leave</label>
+    <label class="btn btn-outline-success"
+           for="present{{ employee.emp_id }}">
+           Present
+    </label>
+
+
+    <input type="radio"
+           class="btn-check"
+           name="status_{{ employee.emp_id }}"
+           id="absent{{ employee.emp_id }}"
+           value="absent">
+
+    <label class="btn btn-outline-danger"
+           for="absent{{ employee.emp_id }}">
+           Absent
+    </label>
+
+
+    <input type="radio"
+           class="btn-check"
+           name="status_{{ employee.emp_id }}"
+           id="paidleave{{ employee.emp_id }}"
+           value="paid_leave">
+
+    <label class="btn btn-outline-primary"
+           for="paidleave{{ employee.emp_id }}">
+           Paid Leave
+    </label>
+
+
+    <input type="radio"
+           class="btn-check"
+           name="status_{{ employee.emp_id }}"
+           id="halfday{{ employee.emp_id }}"
+           value="half_day">
+
+    <label class="btn btn-outline-warning"
+           for="halfday{{ employee.emp_id }}">
+           Half Day
+    </label>
+
+
+    <input type="radio"
+           class="btn-check"
+           name="status_{{ employee.emp_id }}"
+           id="overtime{{ employee.emp_id }}"
+           value="overtime">
+
+    <label class="btn btn-outline-dark"
+           for="overtime{{ employee.emp_id }}">
+           Overtime
+    </label>
+
+</div>
                                     </div>
                                 </td>
                             </tr>

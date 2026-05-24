@@ -15,6 +15,8 @@ urlpatterns = [
     path('attendance/', views.mark_attendance, name='mark_attendance'),
     path('report/', views.generate_report, name='generate_report'),
     path('download-pdf/', views.download_pdf_report, name='download_pdf'),
-    path('payroll/', views.payroll_list, name='payroll_list'),
+    path('process-payroll/', views.process_payroll, name='process_payroll'),
+    path('payroll-records/', views.payroll_list, name='payroll_list'),
+    path("dashboard/", views.dashboard, name='dashboard'),
     
 ]

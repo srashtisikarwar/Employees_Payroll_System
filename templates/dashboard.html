@@ -126,7 +126,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <h3><i class="fas fa-coins me-2"></i>Payroll</h3>
+        <h3>Payroll System</h3>
         <a href="#" class="active"><i class="fas fa-home"></i>Dashboard</a>
         <a href="{% url 'employee:employee_list' %}"><i class="fas fa-users"></i>Employees</a>
         <a href="{% url 'employee:salary_records' %}"><i class="fas fa-money-bill-wave"></i>Salary Records</a>
@@ -146,6 +146,14 @@
                 </form>
             </div>
         </nav>
+        {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
 
         <!-- Summary Cards -->
         <div class="row mt-4">
@@ -236,11 +244,18 @@
                         <a href="{% url 'employee:add_employee' %}" class="btn btn-primary w-100 mb-2">
     <i class="fas fa-user-plus me-2"></i> Add Employee
 </a>
-
-                        <button class="btn btn-success w-100 mb-2"><i class="fas fa-dollar-sign me-2"></i>Process Payroll</button>
-                        <a href="{% url 'employee:payroll_list' %}" class="btn btn-dark w-100 mb-2">
-    <i class="fas fa-list me-2"></i> Payroll Records
+        
+        
+<a href="{% url 'employee:process_payroll' %}"
+   class="btn btn-success w-100 mb-2">
+   <i class="fas fa-dollar-sign me-2"></i> Process Payroll
 </a>
+
+<a href="{% url 'employee:payroll_list' %}"
+   class="btn btn-dark w-100 mb-2">
+   <i class="fas fa-list me-2"></i> Payroll Records
+</a>
+
                         <a href="{% url 'employee:generate_report' %}" class="btn btn-info w-100 mb-2"> <i class="fas fa-file-alt me-2"></i>Generate Report</a>
                         <a href="{% url 'employee:salary_prediction' %}" class="btn btn-secondary w-100 mb-2"><i class="fas fa-chart-line me-2"></i>Salary Prediction</a>
                         <a href="{% url 'employee:mark_attendance' %}" class="btn btn-warning w-100 mb-2"><i class="fas fa-calendar-check me-2"></i>Mark Attendance</a>

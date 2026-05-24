@@ -17,11 +17,13 @@ class Employee(models.Model):
 class Attendance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField()
-    status = models.CharField(max_length=10, choices=[
-        ('present', 'Present'),
-        ('absent', 'Absent'),
-        ('leave', 'On Leave')
-    ], default='present')
+    status = models.CharField(max_length=20, choices=[
+    ('present', 'Present'),
+    ('absent', 'Absent'),
+    ('paid_leave', 'Paid Leave'),
+    ('half_day', 'Half Day'),
+    ('overtime', 'Overtime')
+], default='present')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

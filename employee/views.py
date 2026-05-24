@@ -18,6 +18,7 @@ from .models import Employee
 from .models import Activity
 from .models import Attendance
 from .models import Payroll
+from django.core.mail import send_mail
 
 
 def ask_ai(question):
@@ -244,56 +245,171 @@ def add_employee(request):
 
     return render(request, 'employee/add_employee.html')
 
+
 def process_payroll(request):
-    employees = Employee.objects.all()
-    today = datetime.now()
 
-    for emp in employees:
-        basic = emp.basic_salary
+    try:
 
-        # ✅ HRA = 20% of basic
-        hra = basic * 0.20
+        employees = Employee.objects.all()
 
-        # ✅ Bonus = 10%
-        bonus = basic * 0.10
+        today = datetime.now()
 
-        # ✅ Attendance-based deduction
-        total_days = 30
-        present_days = Attendance.objects.filter(
-            employee=emp,
-            status='present'
-        ).count()
+        for emp in employees:
 
-        absent_days = total_days - present_days
+            # Prevent duplicate payroll
+            already_exists = Payroll.objects.filter(
+                employee=emp,
+                month=today.strftime("%B"),
+                year=today.year
+            ).exists()
 
-        deduction_per_day = basic / total_days
-        deductions = absent_days * deduction_per_day
+            if already_exists:
+                continue
 
-        # ✅ Final Salary
-        net_salary = basic + hra + bonus - deductions
+            # =========================
+            # BASIC SALARY
+            # =========================
+            basic = Decimal(str(emp.basic_salary))
 
-        # ✅ SAVE to Payroll table
-        Payroll.objects.create(
-            employee=emp,
-            month=today.strftime("%B"),
-            year=today.year,
-            basic=basic,
-            hra=hra,
-            bonus=bonus,
-            deductions=deductions,
-            net_salary=net_salary
-        )
+            # HRA and Bonus
+            hra = basic * Decimal('0.20')
+            bonus = basic * Decimal('0.10')
 
-        # ✅ Save activity
-        Activity.objects.create(
-            employee=emp,
-            action_type='salary',
-            description=f'Payroll processed. Net Salary ₹{round(net_salary,2)}'
-        )
+            # =========================
+            # ATTENDANCE
+            # =========================
+            total_days = Decimal('30')
 
-    messages.success(request, "✅ Payroll processed successfully for all employees!")
-    return redirect('employee:dashboard')
+            present_days = Attendance.objects.filter(
+                employee=emp,
+                status='present',
+                date__month=today.month,
+                date__year=today.year
+            ).count()
 
+            paid_leave_days = Attendance.objects.filter(
+                employee=emp,
+                status='paid_leave',
+                date__month=today.month,
+                date__year=today.year
+            ).count()
+
+            half_days = Attendance.objects.filter(
+                employee=emp,
+                status='half_day',
+                date__month=today.month,
+                date__year=today.year
+            ).count()
+
+            overtime_days = Attendance.objects.filter(
+                employee=emp,
+                status='overtime',
+                date__month=today.month,
+                date__year=today.year
+            ).count()
+
+            absent_days = Attendance.objects.filter(
+                employee=emp,
+                status='absent',
+                date__month=today.month,
+                date__year=today.year
+            ).count()
+
+            # =========================
+            # DEDUCTIONS
+            # =========================
+            deduction_per_day = basic / total_days
+
+            absent_deduction = Decimal(absent_days) * deduction_per_day
+
+            half_day_deduction = Decimal(half_days) * (
+                deduction_per_day / Decimal('2')
+            )
+
+            deductions = absent_deduction + half_day_deduction
+
+            # =========================
+            # OVERTIME BONUS
+            # =========================
+            overtime_bonus = Decimal(overtime_days) * Decimal('500')
+
+            # =========================
+            # FINAL SALARY
+            # =========================
+            net_salary = (
+                basic
+                + hra
+                + bonus
+                + overtime_bonus
+                - deductions
+            )
+
+            # =========================
+            # SAVE PAYROLL
+            # =========================
+            Payroll.objects.create(
+                employee=emp,
+                month=today.strftime("%B"),
+                year=today.year,
+                basic=basic,
+                hra=hra,
+                bonus=bonus,
+                deductions=deductions,
+                net_salary=net_salary
+            )
+
+            # =========================
+            # SEND EMAIL
+            # =========================
+            send_mail(
+                subject='Salary Slip Generated',
+
+                                message=f'''
+                    Hello {emp.name},
+
+                    Your salary for {today.strftime("%B")} {today.year} has been processed.
+
+                    -----------------------------------
+                    Salary Slip
+                    -----------------------------------
+
+                    Basic Salary : ₹{basic:.2f}
+                    HRA          : ₹{hra:.2f}
+                    Bonus        : ₹{bonus:.2f}
+                    Deductions   : ₹{deductions:.2f}
+
+                    Net Salary   : ₹{net_salary:.2f}
+
+                    -----------------------------------
+
+                    Regards,
+                    HR Department
+
+''',
+
+                from_email='yourgmail@gmail.com',
+
+                recipient_list=[emp.email],
+
+                fail_silently=False,
+            )
+
+            # =========================
+            # SAVE ACTIVITY
+            # =========================
+            Activity.objects.create(
+                employee=emp,
+                action_type='salary',
+                description=f'Payroll processed. Net Salary ₹{round(net_salary, 2)}'
+            )
+
+        messages.success(request, "Payroll processed successfully!")
+
+        return redirect('employee:dashboard')
+
+    except Exception as e:
+
+        return HttpResponse(f"ERROR: {e}")
 def payroll_list(request):
     records = Payroll.objects.select_related('employee').order_by('-created_at')
 
