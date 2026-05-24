@@ -254,9 +254,13 @@ def process_payroll(request):
 
         today = datetime.now()
 
+        processed_count = 0
+
         for emp in employees:
 
-            # Prevent duplicate payroll
+            # =====================================
+            # PREVENT DUPLICATE PAYROLL
+            # =====================================
             already_exists = Payroll.objects.filter(
                 employee=emp,
                 month=today.strftime("%B"),
@@ -266,18 +270,17 @@ def process_payroll(request):
             if already_exists:
                 continue
 
-            # =========================
+            # =====================================
             # BASIC SALARY
-            # =========================
+            # =====================================
             basic = Decimal(str(emp.basic_salary))
 
-            # HRA and Bonus
             hra = basic * Decimal('0.20')
             bonus = basic * Decimal('0.10')
 
-            # =========================
+            # =====================================
             # ATTENDANCE
-            # =========================
+            # =====================================
             total_days = Decimal('30')
 
             present_days = Attendance.objects.filter(
@@ -315,9 +318,9 @@ def process_payroll(request):
                 date__year=today.year
             ).count()
 
-            # =========================
+            # =====================================
             # DEDUCTIONS
-            # =========================
+            # =====================================
             deduction_per_day = basic / total_days
 
             absent_deduction = Decimal(absent_days) * deduction_per_day
@@ -328,14 +331,14 @@ def process_payroll(request):
 
             deductions = absent_deduction + half_day_deduction
 
-            # =========================
+            # =====================================
             # OVERTIME BONUS
-            # =========================
+            # =====================================
             overtime_bonus = Decimal(overtime_days) * Decimal('500')
 
-            # =========================
+            # =====================================
             # FINAL SALARY
-            # =========================
+            # =====================================
             net_salary = (
                 basic
                 + hra
@@ -344,9 +347,9 @@ def process_payroll(request):
                 - deductions
             )
 
-            # =========================
+            # =====================================
             # SAVE PAYROLL
-            # =========================
+            # =====================================
             Payroll.objects.create(
                 employee=emp,
                 month=today.strftime("%B"),
@@ -358,52 +361,80 @@ def process_payroll(request):
                 net_salary=net_salary
             )
 
-            # =========================
-            # SEND EMAIL
-            # =========================
-            send_mail(
-                subject='Salary Slip Generated',
-
-                                message=f'''
-                    Hello {emp.name},
-
-                    Your salary for {today.strftime("%B")} {today.year} has been processed.
-
-                    -----------------------------------
-                    Salary Slip
-                    -----------------------------------
-
-                    Basic Salary : ₹{basic:.2f}
-                    HRA          : ₹{hra:.2f}
-                    Bonus        : ₹{bonus:.2f}
-                    Deductions   : ₹{deductions:.2f}
-
-                    Net Salary   : ₹{net_salary:.2f}
-
-                    -----------------------------------
-
-                    Regards,
-                    HR Department
-
-''',
-
-                from_email='yourgmail@gmail.com',
-
-                recipient_list=[emp.email],
-
-                fail_silently=False,
-            )
-
-            # =========================
+            # =====================================
             # SAVE ACTIVITY
-            # =========================
+            # =====================================
             Activity.objects.create(
                 employee=emp,
                 action_type='salary',
-                description=f'Payroll processed. Net Salary ₹{round(net_salary, 2)}'
+                description=f'Payroll processed. Net Salary ₹{net_salary:.2f}'
             )
 
-        messages.success(request, "Payroll processed successfully!")
+            # =====================================
+            # SEND EMAIL
+            # =====================================
+            try:
+
+                send_mail(
+                    subject='Salary Slip Generated',
+
+                    message=f'''
+Hello {emp.name},
+
+Your salary for {today.strftime("%B")} {today.year} has been processed.
+
+-----------------------------------
+Salary Slip
+-----------------------------------
+
+Present Days : {present_days}
+Paid Leaves  : {paid_leave_days}
+Half Days    : {half_days}
+Overtime     : {overtime_days}
+Absent Days  : {absent_days}
+
+-----------------------------------
+
+Basic Salary : ₹{basic:.2f}
+HRA          : ₹{hra:.2f}
+Bonus        : ₹{bonus:.2f}
+Deductions   : ₹{deductions:.2f}
+
+Net Salary   : ₹{net_salary:.2f}
+
+-----------------------------------
+
+Regards,
+HR Department
+''',
+
+                    from_email='yourgmail@gmail.com',
+                    recipient_list=[emp.email],
+                    fail_silently=False,
+                )
+
+            except Exception as email_error:
+
+                print("Email Error:", email_error)
+
+            processed_count += 1
+
+        # =====================================
+        # SUCCESS MESSAGE
+        # =====================================
+        if processed_count > 0:
+
+            messages.success(
+                request,
+                f"Payroll processed successfully for {processed_count} employees!"
+            )
+
+        else:
+
+            messages.warning(
+                request,
+                "Payroll already processed for this month."
+            )
 
         return redirect('employee:dashboard')
 
