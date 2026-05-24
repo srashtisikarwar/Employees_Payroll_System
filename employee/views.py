@@ -19,7 +19,6 @@ from .models import Activity
 from .models import Attendance
 from .models import Payroll
 from django.core.mail import send_mail
-from django.conf import settings
 
 
 def ask_ai(question):
@@ -374,42 +373,50 @@ def process_payroll(request):
             # =====================================
             # SEND EMAIL
             # =====================================
-           # SEND EMAIL
-        try:
-            send_mail(
-                subject='Salary Slip Generated',
+            try:
 
-                message=f'''
-        Hello {emp.name},
+                send_mail(
+                    subject='Salary Slip Generated',
 
-        Your salary for {today.strftime("%B")} {today.year} has been processed.
+                    message=f'''
+Hello {emp.name},
 
-        -----------------------------------
-        Salary Slip
-        -----------------------------------
+Your salary for {today.strftime("%B")} {today.year} has been processed.
 
-        Basic Salary : ₹{basic:.2f}
-        HRA          : ₹{hra:.2f}
-        Bonus        : ₹{bonus:.2f}
-        Deductions   : ₹{deductions:.2f}
+-----------------------------------
+Salary Slip
+-----------------------------------
 
-        Net Salary   : ₹{net_salary:.2f}
+Present Days : {present_days}
+Paid Leaves  : {paid_leave_days}
+Half Days    : {half_days}
+Overtime     : {overtime_days}
+Absent Days  : {absent_days}
 
-        -----------------------------------
+-----------------------------------
 
-        Regards,
-        HR Department
-        ''',
+Basic Salary : ₹{basic:.2f}
+HRA          : ₹{hra:.2f}
+Bonus        : ₹{bonus:.2f}
+Deductions   : ₹{deductions:.2f}
 
-                from_email=settings.EMAIL_HOST_USER,
+Net Salary   : ₹{net_salary:.2f}
 
-                recipient_list=[emp.email],
+-----------------------------------
 
-                fail_silently=True,
-            )
+Regards,
+HR Department
+''',
 
-        except Exception as email_error:
-            print("Email Error:", email_error)
+                    from_email='yourgmail@gmail.com',
+                    recipient_list=[emp.email],
+                    fail_silently=False,
+                )
+
+            except Exception as email_error:
+
+                print("Email Error:", email_error)
+
             processed_count += 1
 
         # =====================================
