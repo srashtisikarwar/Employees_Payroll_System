@@ -82,7 +82,7 @@ WSGI_APPLICATION = "Employees_Payroll_System.wsgi.application"
 
 DATABASES = {
     'default': dj_database_url.parse(
-        os.environ.get("DATABASE_URL")
+        os.environ.get('DATABASE_URL')
     )
 }
 
