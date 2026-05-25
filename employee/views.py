@@ -408,7 +408,7 @@ Regards,
 HR Department
 ''',
 
-                    from_email='yourgmail@gmail.com',
+                    from_email='settings.EMAIL_HOST_USER',
                     recipient_list=[emp.email],
                     fail_silently=False,
                 )
