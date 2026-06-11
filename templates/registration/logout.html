@@ -1,0 +1,18 @@
+<form action="{% url 'logout' %}" method="post">
+
+    {% csrf_token %}
+
+    <button type="submit"
+            style="background:none;
+                   border:none;
+                   color:white;
+                   padding:14px 25px;
+                   width:100%;
+                   text-align:left;">
+
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+
+    </button>
+
+</form>

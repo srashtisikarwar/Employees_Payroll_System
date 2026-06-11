@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>My Attendance</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+
+        body{
+            background:#f4f6f9;
+            font-family:'Poppins',sans-serif;
+        }
+
+        .container-box{
+            margin-top:40px;
+        }
+
+        .card{
+            border:none;
+            border-radius:15px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .table thead{
+            background:#0d6efd;
+            color:white;
+        }
+
+        .status-present{
+            color:green;
+            font-weight:bold;
+        }
+
+        .status-absent{
+            color:red;
+            font-weight:bold;
+        }
+
+        .status-leave{
+            color:orange;
+            font-weight:bold;
+        }
+
+        .status-overtime{
+            color:blue;
+            font-weight:bold;
+        }
+
+        .status-halfday{
+            color:purple;
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container container-box">
+
+    <!-- Heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2 class="fw-bold text-primary">
+
+            <i class="fas fa-calendar-check"></i>
+            My Attendance
+
+        </h2>
+
+        <a href="{% url 'employee:employee_dashboard' %}"
+           class="btn btn-primary">
+
+            <i class="fas fa-arrow-left"></i>
+            Back Dashboard
+
+        </a>
+
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for a in attendance %}
+
+                        <tr>
+
+                            <td>
+                                {{ a.date }}
+                            </td>
+
+                            <td>
+
+                                {% if a.status == 'present' %}
+
+                                    <span class="status-present">
+                                        Present
+                                    </span>
+
+                                {% elif a.status == 'absent' %}
+
+                                    <span class="status-absent">
+                                        Absent
+                                    </span>
+
+                                {% elif a.status == 'paid_leave' %}
+
+                                    <span class="status-leave">
+                                        Paid Leave
+                                    </span>
+
+                                {% elif a.status == 'overtime' %}
+
+                                    <span class="status-overtime">
+                                        Overtime
+                                    </span>
+
+                                {% elif a.status == 'half_day' %}
+
+                                    <span class="status-halfday">
+                                        Half Day
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ a.created_at }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="3"
+                                class="text-center text-muted">
+
+                                No attendance records found.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 import json
 from urllib import request
 from django.http import JsonResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from datetime import date
 from decimal import Decimal
 from reportlab.pdfgen import canvas
@@ -19,6 +19,8 @@ from .models import Activity
 from .models import Attendance
 from .models import Payroll
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
 def ask_ai(question):
@@ -178,6 +180,22 @@ def chatbot(request):
 
     # 🟢 First page load
     return render(request, 'employee/chatbot.html')
+
+@login_required
+def role_redirect(request):
+
+    if request.user.is_superuser:
+        return redirect('/admin/')
+
+    elif request.user.groups.filter(name='HR').exists():
+        return redirect('employee:dashboard')
+
+    elif request.user.groups.filter(name='Employee').exists():
+        return redirect('employee:employee_dashboard')
+
+    else:
+        return redirect('login')
+@login_required
 def dashboard(request):
     today = timezone.now().date()
     total_employees = Employee.objects.count()
@@ -204,7 +222,51 @@ def dashboard(request):
         'activities': recent_activities
     })
 
+@login_required
+def employee_dashboard(request):
 
+    employee = get_object_or_404(Employee, user=request.user)
+
+    payrolls = Payroll.objects.filter(
+        employee=employee
+    ).order_by('-id')
+
+    present_days = Attendance.objects.filter(
+        employee=employee,
+        status='present'
+    ).count()
+
+    absent_days = Attendance.objects.filter(
+        employee=employee,
+        status='absent'
+    ).count()
+
+    paid_leave_days = Attendance.objects.filter(
+        employee=employee,
+        status='paid_leave'
+    ).count()
+
+    overtime_days = Attendance.objects.filter(
+        employee=employee,
+        status='overtime'
+    ).count()
+
+    activities = Activity.objects.filter(
+        employee=employee
+    ).order_by('-date')[:5]
+
+    return render(request, 'employee/employee_dashboard.html', {
+
+        'employee': employee,
+        'payrolls': payrolls,
+
+        'present_days': present_days,
+        'absent_days': absent_days,
+        'paid_leave_days': paid_leave_days,
+        'overtime_days': overtime_days,
+
+        'activities': activities,
+    })
 
 
 # Create your views here
@@ -696,3 +758,47 @@ def download_pdf_report(request):
 
     p.save()
     return response
+
+@login_required
+def my_payroll(request):
+
+    employee = Employee.objects.get(user=request.user)
+
+    payrolls = Payroll.objects.filter(employee=employee)
+
+    return render(request, 'employee/my_payroll.html', {
+        'payrolls': payrolls
+    })
+
+@login_required
+def my_profile(request):
+
+    employee = Employee.objects.get(user=request.user)
+
+    return render(request, 'employee/my_profile.html', {
+        'employee': employee
+    })
+
+@login_required
+def my_attendance(request):
+
+    employee = Employee.objects.get(user=request.user)
+
+    attendance = Attendance.objects.filter(employee=employee)
+
+    return render(request, 'employee/my_attendance.html', {
+        'attendance': attendance
+    })
+
+@login_required
+def my_salary(request):
+
+    employee = Employee.objects.get(user=request.user)
+
+    return render(request, 'employee/my_salary.html', {
+        'employee': employee
+    })
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')

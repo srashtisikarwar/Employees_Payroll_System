@@ -18,5 +18,13 @@ urlpatterns = [
     path('process-payroll/', views.process_payroll, name='process_payroll'),
     path('payroll-records/', views.payroll_list, name='payroll_list'),
     path("dashboard/", views.dashboard, name='dashboard'),
+    path('redirect/', views.role_redirect, name='role_redirect'),
+
+    path('employee-dashboard/',views.employee_dashboard,name='employee_dashboard'),
+    path('my-payroll/', views.my_payroll, name='my_payroll'),
+    path('my-profile/', views.my_profile, name='my_profile'),
+    path('my-attendance/', views.my_attendance, name='my_attendance'),
+    path('my-salary/', views.my_salary, name='my_salary'),
+    path('logout/', views.user_logout, name='logout'),
     
 ]

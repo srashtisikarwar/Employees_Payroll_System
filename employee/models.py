@@ -1,8 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Employee(models.Model):
     emp_id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    ) 
+
     name = models.CharField(max_length=100)
     designation = models.CharField(max_length=100)
     department = models.CharField(max_length=100)
