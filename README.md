@@ -240,7 +240,31 @@ http://127.0.0.1:8000/
 This project can be deployed on:
 
 * Render
+## Live Demo
 
+🌐 Live Application:
+https://your-app-name.onrender.com
+
+## Demo Credentials
+
+### Admin Login
+
+Username: admin
+Password: admin123
+
+### HR Login
+
+Username: hruser
+Password: hr123
+
+### Employee Login
+
+Username: employee1
+Password: emp123
+
+## Note
+
+These are demo accounts created for testing purposes only.
 
 ---
 
