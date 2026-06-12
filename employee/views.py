@@ -1,3 +1,4 @@
+from email.headerregistry import Group
 import json
 from urllib import request
 from django.http import JsonResponse
@@ -805,27 +806,38 @@ def user_logout(request):
 
 
 
+from django.contrib.auth.models import User, Group
+from django.http import HttpResponse
+
 def create_demo_users(request):
 
-    if not User.objects.filter(username='admin_demo').exists():
+    hr_group, created = Group.objects.get_or_create(name='HR')
+    emp_group, created = Group.objects.get_or_create(name='Employee')
+
+    # Admin User
+    if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser(
             username='admin',
             email='admin@gmail.com',
             password='admin@1502'
         )
 
-    if not User.objects.filter(username='hr_demo').exists():
-        User.objects.create_user(
+    # HR User
+    if not User.objects.filter(username='Shivangi').exists():
+        hr = User.objects.create_user(
             username='Shivangi',
             email='shivangiSharma@gmail.com',
             password='shivi@1234'
         )
+        hr.groups.add(hr_group)
 
-    if not User.objects.filter(username='emp_demo').exists():
-        User.objects.create_user(
+    # Employee User
+    if not User.objects.filter(username='Nikita').exists():
+        emp = User.objects.create_user(
             username='Nikita',
             email='nikitasharma@gmail.com',
             password='niki@1234'
         )
+        emp.groups.add(emp_group)
 
     return HttpResponse("Demo users created successfully!")
