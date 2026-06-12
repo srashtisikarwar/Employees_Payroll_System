@@ -856,11 +856,10 @@ def create_demo_users(request):
     )
 
     # Employee User
+    # Employee User
     emp_user, created = User.objects.get_or_create(
         username='Nikita',
-        defaults={
-            'email': 'nikitasharma@gmail.com'
-        }
+        defaults={'email': 'nikitasharma@gmail.com'}
     )
 
     if created:
@@ -869,19 +868,23 @@ def create_demo_users(request):
 
     emp_user.groups.add(emp_group)
 
-    Employee.objects.get_or_create(
-        user=emp_user,
+    # Create Employee record if missing
+    employee, created = Employee.objects.get_or_create(
+        email='nikitasharma@gmail.com',
         defaults={
+            'user': emp_user,
             'name': 'Nikita Sharma',
             'designation': 'Software Engineer',
             'department': 'IT',
             'joining_date': date.today(),
             'basic_salary': 50000,
-            'email': 'nikitasharma@gmail.com',
             'phone': '9876543210'
         }
     )
 
+    if employee.user is None:
+        employee.user = emp_user
+        employee.save()
     return HttpResponse("Demo users created successfully!")
 
 def check_users(request):
