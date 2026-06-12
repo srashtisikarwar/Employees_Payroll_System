@@ -63,10 +63,16 @@
             Employee Payroll System
         </h2>
 <p>Login to continue</p>
+{% if form.errors %}
+<div class="alert alert-danger">
+    Invalid username or password.
+</div>
+{% endif %}
 
         <form method="post">
 
             {% csrf_token %}
+            
 
             <div class="mb-3">
                 <label>Username</label>
@@ -85,6 +91,7 @@
                        placeholder="Enter password"
                        required>
             </div>
+
             <a href="{% url 'password_reset' %}">
     Forgot Password?
 </a>
