@@ -243,24 +243,24 @@ This project can be deployed on:
 ## Live Demo
 
 🌐 Live Application:
-https://your-app-name.onrender.com
+https://employees-payroll-system.onrender.com
 
 ## Demo Credentials
 
 ### Admin Login
 
 Username: admin
-Password: admin123
+Password: admin@1502
 
 ### HR Login
 
-Username: hruser
-Password: hr123
+Username: Shivangi
+Password: shivi@1234
 
 ### Employee Login
 
-Username: employee1
-Password: emp123
+Username: Nikita
+Password: niki@1234
 
 ## Note
 
