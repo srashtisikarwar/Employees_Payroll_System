@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect,HttpResponse
 from django.urls import reverse
 from django.db.models import Sum
 from django.utils import timezone
-from .models import Employee
+from .models import Employee,User
 from .models import Activity
 from .models import Attendance
 from .models import Payroll
@@ -802,3 +802,30 @@ def my_salary(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+
+
+def create_demo_users(request):
+
+    if not User.objects.filter(username='admin_demo').exists():
+        User.objects.create_superuser(
+            username='admin',
+            email='admin@gmail.com',
+            password='admin@1502'
+        )
+
+    if not User.objects.filter(username='hr_demo').exists():
+        User.objects.create_user(
+            username='Shivangi',
+            email='shivangiSharma@gmail.com',
+            password='shivi@1234'
+        )
+
+    if not User.objects.filter(username='emp_demo').exists():
+        User.objects.create_user(
+            username='Nikita',
+            email='nikitasharma@gmail.com',
+            password='niki@1234'
+        )
+
+    return HttpResponse("Demo users created successfully!")
