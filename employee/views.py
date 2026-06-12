@@ -811,33 +811,45 @@ from django.http import HttpResponse
 
 def create_demo_users(request):
 
-    hr_group, created = Group.objects.get_or_create(name='HR')
-    emp_group, created = Group.objects.get_or_create(name='Employee')
+    hr_group, _ = Group.objects.get_or_create(name='HR')
+    emp_group, _ = Group.objects.get_or_create(name='Employee')
 
-    # Admin User
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser(
-            username='admin',
-            email='admin@gmail.com',
-            password='admin@1502'
-        )
+    # Admin
+    admin_user, created = User.objects.get_or_create(
+        username='admin',
+        defaults={
+            'email': 'admin@gmail.com',
+            'is_staff': True,
+            'is_superuser': True,
+        }
+    )
+
+    if created:
+        admin_user.set_password('admin@1502')
+        admin_user.save()
 
     # HR User
-    if not User.objects.filter(username='Shivangi').exists():
-        hr = User.objects.create_user(
-            username='Shivangi',
-            email='shivangiSharma@gmail.com',
-            password='shivi@1234'
-        )
-        hr.groups.add(hr_group)
+    hr_user, created = User.objects.get_or_create(
+        username='Shivangi',
+        defaults={'email': 'shivangiSharma@gmail.com'}
+    )
+
+    if created:
+        hr_user.set_password('shivi@1234')
+        hr_user.save()
+
+    hr_user.groups.add(hr_group)
 
     # Employee User
-    if not User.objects.filter(username='Nikita').exists():
-        emp = User.objects.create_user(
-            username='Nikita',
-            email='nikitasharma@gmail.com',
-            password='niki@1234'
-        )
-        emp.groups.add(emp_group)
+    emp_user, created = User.objects.get_or_create(
+        username='Nikita',
+        defaults={'email': 'nikitasharma@gmail.com'}
+    )
+
+    if created:
+        emp_user.set_password('niki@1234')
+        emp_user.save()
+
+    emp_user.groups.add(emp_group)
 
     return HttpResponse("Demo users created successfully!")
