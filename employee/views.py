@@ -883,3 +883,16 @@ def create_demo_users(request):
     )
 
     return HttpResponse("Demo users created successfully!")
+
+def check_users(request):
+    data = "<h2>Users</h2>"
+
+    for u in User.objects.all():
+        data += f"{u.username}<br>"
+
+    data += "<hr><h2>Employees</h2>"
+
+    for e in Employee.objects.all():
+        data += f"{e.name} -> {e.user}<br>"
+
+    return HttpResponse(data)
