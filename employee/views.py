@@ -831,7 +831,9 @@ def create_demo_users(request):
     # HR User
     hr_user, created = User.objects.get_or_create(
         username='Shivangi',
-        defaults={'email': 'shivangiSharma@gmail.com'}
+        defaults={
+            'email': 'shivangiSharma@gmail.com'
+        }
     )
 
     if created:
@@ -840,10 +842,25 @@ def create_demo_users(request):
 
     hr_user.groups.add(hr_group)
 
+    Employee.objects.get_or_create(
+        user=hr_user,
+        defaults={
+            'name': 'Shivangi Sharma',
+            'designation': 'HR Manager',
+            'department': 'HR',
+            'joining_date': date.today(),
+            'basic_salary': 60000,
+            'email': 'shivangiSharma@gmail.com',
+            'phone': '9876543211'
+        }
+    )
+
     # Employee User
     emp_user, created = User.objects.get_or_create(
         username='Nikita',
-        defaults={'email': 'nikitasharma@gmail.com'}
+        defaults={
+            'email': 'nikitasharma@gmail.com'
+        }
     )
 
     if created:
@@ -851,5 +868,18 @@ def create_demo_users(request):
         emp_user.save()
 
     emp_user.groups.add(emp_group)
+
+    Employee.objects.get_or_create(
+        user=emp_user,
+        defaults={
+            'name': 'Nikita Sharma',
+            'designation': 'Software Engineer',
+            'department': 'IT',
+            'joining_date': date.today(),
+            'basic_salary': 50000,
+            'email': 'nikitasharma@gmail.com',
+            'phone': '9876543210'
+        }
+    )
 
     return HttpResponse("Demo users created successfully!")
